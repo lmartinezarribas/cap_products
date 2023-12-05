@@ -1,5 +1,10 @@
 namespace com.logali;
 
+using {
+    cuid,
+    managed
+} from '@sap/cds/common';
+
 type Address {
     Street     : String;
     City       : String;
@@ -57,25 +62,45 @@ type Address {
 //     }
 // }
 
-entity Products {
-    key ID               : UUID;
-        name             : String default 'NoName';
-        Description      : String not null;
-        ImageUrl         : String;
-        ReleaseDate      : DateTime default $now;
-        CreationDate     : Date default CURRENT_DATE;
-        DiscontinuedDate : DateTime;
-        Price            : Decimal(16, 2);
-        Height           : Decimal(16, 2);
-        Width            : Decimal(16, 2);
-        Depth            : Decimal(16, 2);
-        Quantity         : Decimal(16, 2);
-        Supplier         : Association to Supplier;
-        UnitOfMeasure    : Association to UnitOfMeasures;
-        Currency         : Association to Currencies;
-        DimensionUnit    : Association to DimensionUnits;
-        Category         : Association to Categories;
 
+entity Products : cuid, managed {
+    //key ID               : UUID;
+    name             : localized String default 'NoName';
+    Description      : localized String not null;
+    ImageUrl         : String;
+    ReleaseDate      : DateTime default $now;
+    CreationDate     : Date default CURRENT_DATE;
+    DiscontinuedDate : DateTime;
+    Price            : Decimal(16, 2);
+    Height           : Decimal(16, 2);
+    Width            : Decimal(16, 2);
+    Depth            : Decimal(16, 2);
+    Quantity         : Decimal(16, 2);
+    Supplier         : Association to Supplier;
+    UnitOfMeasure    : Association to UnitOfMeasures;
+    Currency         : Association to Currencies;
+    DimensionUnit    : Association to DimensionUnits;
+    Category         : Association to Categories;
+    SalesData      : Association to many SalesData
+                           on SalesData.Product = $self;
+    Reviews      : Association to many ProductReview
+                           on Reviews.Product = $self;
+
+};
+
+
+entity Orders {
+    key ID       : UUID;
+        Date     : Date;
+        Customer : String;
+        Item     : Composition of many OrderItems;
+};
+
+entity OrderItems {
+    key ID       : UUID;
+        Order    : Association to Orders;
+        Product  : Association to Products;
+        Quantity : Integer;
 };
 
 entity Supplier {
@@ -85,6 +110,8 @@ entity Supplier {
         Email   : String;
         Phone   : String;
         Fax     : String;
+        Product : Association to many Products
+                      on Product.Supplier = $self;
 };
 
 
@@ -96,6 +123,7 @@ entity Categories {
 entity StockAvailability {
     key ID          : Integer;
         Description : String;
+        Product : Association to Products;
 
 };
 
@@ -129,15 +157,33 @@ entity ProductReview {
         Name    : String;
         Rating  : Integer;
         Comment : String;
-}
+        Product : Association to Products;
+};
 
 entity SalesData {
-    key ID           : UUID;
-        DeliveryDate : DateTime;
-        Revenue      : Decimal(16, 2);
-}
+    key ID            : UUID;
+        DeliveryDate  : DateTime;
+        Revenue       : Decimal(16, 2);
+        DeliveryMonth : Association to Months;
+        Product       : Association to Products;
+        Currency      : Association to Currencies;
+};
 
-entity SelProducts3  as
+entity SelProducts  as select from Products;
+
+entity SelProducts1 as
+    select from Products {
+        *
+    };
+
+entity SelProducts2 as
+    select from Products {
+        name,
+        Price,
+        Quantity
+    };
+
+entity SelProducts3 as
     select from Products
     left join ProductReview
         on Products.name = ProductReview.Name
@@ -161,13 +207,13 @@ entity SelProducts3  as
 //     where
 //         name = : pName;
 
-entity ProjProducts3 as
-    projection on Products {
-        ReleaseDate,
-        name
-    }
+// entity ProjProducts3 as
+//     projection on Products {
+//         ReleaseDate,
+//         name
+//     }
 
 extend Products with {
     PriceCondition     : String(2);
     PriceDetermination : String(3)
-}
+};
