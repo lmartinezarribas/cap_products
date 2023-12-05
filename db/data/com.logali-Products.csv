@@ -1,0 +1,3 @@
+ID;Name;Description;ImageUrl;ReleaseDate;DiscontinuedDate;Price;Height;Width;Depth;Quantity
+Product1;Bread;Whole grain bread;/product/webapp/assets/bread.jpg;2023-01-01T00:00:00Z;;2.5;5;10;8;20
+Product2;Milk;Low fat milk;/product/webapp/assets/milk.jpg;2023-01-01T00:00:00Z;;3.5;10;5;5;10

@@ -1,0 +1,3 @@
+ID;Name;address_Street;address_City;address_State;address_PostalCode;address_Country;Email;Phone;Fax
+Supplier1;Mercadona;Calle Londres;Barcelona;08;8029;ESP;mercadona@mercadona.com;;
+Supplier2;Aldi;Calle Paris;Barcelona;08;8020;ESP;aldi@aldi.com;;
