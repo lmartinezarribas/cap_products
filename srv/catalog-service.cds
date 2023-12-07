@@ -17,16 +17,18 @@ using {com.logali as logali} from '../db/schema';
 define service CatalogService {
     entity Products          as
         select from logali.Products {
-            ID,
-            name          as ProductName @mandatory,
-            Description,
-            ImageUrl,
-            ReleaseDate,
-            DiscontinuedDate,
-            Price,
-            Height,
-            Width,
-            Depth,
+            // ID,
+            // name          as ProductName @mandatory,
+            // Description,
+            // ImageUrl,
+            // ReleaseDate,
+            // DiscontinuedDate,
+            // Price,
+            // Height,
+            // Width,
+            // Depth,
+            *,
+            Quantity,
             UnitOfMeasure as ToUnitOfMeasure,
             Currency      as ToCurrency,
             Category      as ToCategory,
@@ -76,7 +78,60 @@ define service CatalogService {
             Description,
             Product as ToProduct
 
-        }
+        };
 
+    @readonly
+    entity VH_Categories     as
+        select from logali.Categories {
+            ID   as Code,
+            Name as Text
 
+        };
+
+    @readonly
+    entity VH_Currencies     as
+        select from logali.Currencies {
+            ID          as Code,
+            Description as Text
+        };
+
+    @readonly
+    entity VH_UnitOfMeasure  as
+        select from logali.UnitOfMeasures {
+            ID          as Code,
+            Description as Text
+        };
+
+    @readonly
+    entity VH_DimensionUnits as
+        ID as Code,
+        Description as Text
+        select from logali.DimensionUnits;
+
+}
+
+define service MyService {
+     entity SuppliersProduct as select from logali.Products[name = 'Milk'
+     ]{
+        *,
+        Name,
+        Description,
+        Supplier.Address
+     }
+    where
+        Supplier.Address.PostalCode = 98074;
+
+    entity SuppliersToSales as
+        select
+            Supplier.Email,
+            Category.Name,
+            SalesData.Currency.ID,
+            SalesData.Currency.Description
+        from logali.Products;
+
+    // entity EntityInfix as
+    //     Supplier[Name = ]
+    // select from logali.Products
+
+    
 }
